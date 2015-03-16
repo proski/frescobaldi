@@ -37,23 +37,30 @@ _icons = {}
 _pixmaps = {}
 
 
-def icon(name):
+def icon(name, palette=None):
     """Returns a QIcon that shows a LilyPond-generated SVG in the default text color."""
+    if not palette:
+        palette = QApplication.palette()
+    key = (name, palette.foreground().color().rgba(),
+           palette.highlightedText().color().rgba())
     try:
-        return _icons[name]
+        return _icons[key]
     except KeyError:
-        icon = _icons[name] = QIcon(Engine(name))
+        icon = _icons[key] = QIcon(Engine(name, palette))
         return icon
 
 
-def pixmap(name, size, mode, state):
+def pixmap(name, size, mode, state, palette):
     """Returns a (possibly cached) pixmap of the name and size with the default text color.
     
     The state argument is ignored for now.
     
     """
-    color = QApplication.palette().foreground().color()
-    key = (name, size.width(), size.height(), color.rgb(), mode)
+    if mode == QIcon.Selected:
+        color = palette.highlightedText().color()
+    else:
+        color = palette.foreground().color()
+    key = (name, size.width(), size.height(), color.rgba(), mode)
     try:
         return _pixmaps[key]
     except KeyError:
@@ -74,12 +81,13 @@ def pixmap(name, size, mode, state):
 
 class Engine(QIconEngineV2):
     """Engine to provide renderings of SVG icons in the default text color."""
-    def __init__(self, name):
+    def __init__(self, name, palette):
         super(Engine, self).__init__()
         self._name = name
+        self._palette = palette
         
     def pixmap(self, size, mode, state):
-        return pixmap(self._name, size, mode, state)
+        return pixmap(self._name, size, mode, state, self._palette)
         
     def paint(self, painter, rect, mode, state):
         p = self.pixmap(rect.size(), mode, state)

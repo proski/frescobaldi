@@ -40,7 +40,11 @@ def action(name, parent=None, collection=None):
     a = QAction(parent)
     a.setObjectName(name)
     a.setText(title.replace('&', '&&'))
-    icon = snippets.icon(name)
+    if hasattr(parent, 'menuBar'):
+        palette = parent.menuBar().palette()
+        icon = snippets.icon(name, palette)
+    else:
+        icon = snippets.icon(name)
     if icon:
         a.setIcon(icon)
     if collection:

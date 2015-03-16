@@ -179,7 +179,7 @@ def parse(text):
     return textvars(t, d)
 
 
-def icon(name):
+def icon(name, palette=None):
     """Returns an icon if defined."""
     d = get(name).variables
     icon = d.get('icon')
@@ -187,7 +187,7 @@ def icon(name):
         return icons.get(icon)
     icon = d.get('symbol')
     if icon:
-        return symbols.icon(icon)
+        return symbols.icon(icon, palette)
 
 
 @unmemoize
