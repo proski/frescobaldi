@@ -56,7 +56,7 @@ def pixmap(name, size, mode, state, palette):
     The state argument is ignored for now.
     
     """
-    if mode == QIcon.Selected:
+    if mode in (QIcon.Active, QIcon.Selected):
         color = palette.highlightedText().color()
     else:
         color = palette.foreground().color()
